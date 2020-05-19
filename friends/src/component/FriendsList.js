@@ -5,6 +5,7 @@ import FriendForm from './FriendForm';
 
 const FriendList = () => {
   const [ friends, setFriends ] = useState([]);
+  const [friendToEdit, setFriendToEdit] = useState(null);
 
   useEffect(() => {
     axiosWithAuth()
@@ -15,10 +16,24 @@ const FriendList = () => {
 
   return (
     <>
-      <FriendForm friends={friends} setFriends={setFriends} />
-      {friends.map(friend => {
-        return <Friend {...friend} friends={friends} setFriends={setFriends} />
-      })}
+      <FriendForm 
+        setFriends={setFriends} 
+        friendToEdit={friendToEdit} 
+        setFriendToEdit={setFriendToEdit} 
+      />
+      <div className="friend-list">
+        {friends.map(friend => {
+          return (
+            <Friend
+              key={friend.id}
+              {...friend}
+              friends={friends}
+              setFriends={setFriends}
+              setFriendToEdit={setFriendToEdit}
+            />
+          )
+        })}
+      </div>
     </>
   );
 }

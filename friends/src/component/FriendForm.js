@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { axiosWithAuth } from '../utils/axiosWithAuth';
 
-const FriendForm = ({ friends, setFriends }) => {
+const FriendForm = ({ setFriends, friendToEdit, setFriendToEdit }) => {
   const [ newFriend, setNewFriend ] = useState({ name: '', age: '', email: ''});
+
+  useEffect(() => {
+    if(friendToEdit) setNewFriend(friendToEdit);
+  }, [friendToEdit])
 
   const submitFriend = e => {
     e.preventDefault();
-    axiosWithAuth()
-      .post('http://localhost:5000/api/friends', newFriend)
-      .then(res => setFriends(res.data))
-      .catch(err => console.log(err))
+
+    (friendToEdit) 
+      ? axiosWithAuth()
+        .put(`http://localhost:5000/api/friends/${newFriend.id}`, newFriend)
+        .then(res => setFriends(res.data))
+        .catch(err => console.log(err))
+      : axiosWithAuth()
+        .post('http://localhost:5000/api/friends', newFriend)
+        .then(res => setFriends(res.data))
+        .catch(err => console.log(err))
 
     setNewFriend({ name: '', age: '', email: '' });
+    setFriendToEdit(null)
   }
 
   const handleChange = e => {
@@ -41,7 +52,7 @@ const FriendForm = ({ friends, setFriends }) => {
         value={newFriend.email}
         onChange={handleChange}
       />
-      <button>Submit</button>
+      <button>{(friendToEdit) ? 'Edit' : 'Submit'}</button>
     </form>
   );
 }
